@@ -72,12 +72,9 @@ public class Lexer {
                 return createToken(TokenType.ASSIGN, "=");
             }
 
-            // Automata elementos, numeros, palabras reservadas
+            // Automata elementos, palabras reservadas
             
-            // 3. MANEJO DE ERRORES: Si lee un símbolo inválido (ej: @, %)
-            throw new RuntimeException("Error léxico: Caracter no reconocido '" + currentChar + "' en la posición " + position);
-        }
-            // 4. Automata para coeficientes y subindices
+           // 3. Automata para coeficientes y subindices
                 if (Character.isDigit(currentChar)) {
                 StringBuilder sb = new StringBuilder();
                 while (currentChar != '\0' && Character.isDigit(currentChar)) {
@@ -92,7 +89,7 @@ public class Lexer {
                 }
             }
 
-            // 5. Automata de identificadores (Ej: _mezcla, _M1)
+            // 4. Automata de identificadores (Ej: _mezcla, _M1)
                 if (currentChar == '_') {
                     StringBuilder sb = new StringBuilder();
                     sb.append(currentChar);
@@ -114,6 +111,45 @@ public class Lexer {
                 throw new RuntimeException("Error léxico: Un identificador debe llevar una letra después del guion bajo. Encontrado: '" + currentChar + "' en la posición " + position);
                 }
                 }
+                // 5. Automata para la gramatica de elementos
+            if (Character.isUpperCase(currentChar)) {
+                StringBuilder sb = new StringBuilder();
+                sb.append(currentChar);
+                advance();
+                
+                // Mientras sigan letras minúsculas, forman parte del mismo elemento
+                while (currentChar != '\0' && Character.isLowerCase(currentChar)) {
+                    sb.append(currentChar);
+                    advance();
+                }
+                return createToken(TokenType.ELEMENT, sb.toString());
+            }
+            
+            // 6. Automata de palabras reservadas
+            if (Character.isLowerCase(currentChar)) {
+                StringBuilder sb = new StringBuilder();
+                //las palabras definidas serán minusculas
+                while (currentChar != '\0' && Character.isLowerCase(currentChar)) {
+                    sb.append(currentChar);
+                    advance();
+                }
+                
+                String word = sb.toString();
+                switch (word) {
+                    case "reaction": return createToken(TokenType.REACTION, word);
+                    case "balance":  return createToken(TokenType.BALANCE, word);
+                    case "compare":  return createToken(TokenType.COMPARE, word);
+                    case "mass":     return createToken(TokenType.MASS, word);
+                    case "validate": return createToken(TokenType.VALIDATE, word);
+                    default:
+                        // Si no está en el catálogo, lanzamos error
+                        throw new RuntimeException("Error léxico: Comando no reconocido '" + word + "' en la posición " + position);
+                }
+            }
+           // 7. MANEJO DE ERRORES: Si lee un símbolo inválido (ej: @, %)
+            throw new RuntimeException("Error léxico: Caracter no reconocido '" + currentChar + "' en la posición " + position);
+            
+        }
         // fin del archivo o fila
         return new Token(TokenType.EOF, "");
     }  
