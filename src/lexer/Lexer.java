@@ -158,7 +158,12 @@ public class Lexer {
                             sugerencia = "¿Quisiste decir 'reaction'? Revisa la ortografia .Los comandos no llevan números ni mayusculas.";
                         } else if (word.startsWith("balance") || word.startsWith("compare") || word.startsWith("mass") || word.startsWith("validate")) {
                             sugerencia = "Revisa la ortografía. Los comandos van en minúsculas y sin números.";
-                        } else {
+                        } else if(word.length()<=2){
+                        sugerencia = "Si es un elemento químico, recuerda que debe iniciar con mayúsula (ejemplo: Na, H, Cl)";
+                        }else if(word.matches(".*\\d.*")){
+                            sugerencia = "Si intentabas escribir una molecula como "+word+". Recuerda que los símbolos quimicos \n"+
+                                         "inician con mayúscula (ejemplo: NaCl en lugar de nacl";
+                        }else {
                             sugerencia = "¿Olvidaste poner el guion bajo '_' al inicio de tu variable (ej: _" + word + ")? Si intentabas usar un comando, los válidos son: reaction, balance, compare, mass, validate.";
                         }
 
