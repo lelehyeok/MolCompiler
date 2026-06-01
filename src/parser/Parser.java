@@ -14,9 +14,13 @@ public class Parser {
     private List<Token> tokens;
     private int actual = 0;
     private List<String> erroresSintacticos = new ArrayList<>();
-    
     private ArrayList<String> derivacion = new ArrayList<>();
-    private Nodos raiz = null;
+    private Nodos raiz = null;    
+    private List<Nodos> arboles = new ArrayList<>();
+
+    public List<Nodos> getArboles() {
+        return arboles;
+    }
 
     public ArrayList<String> getDerivacion() { 
         return derivacion; 
@@ -85,18 +89,19 @@ public class Parser {
     }
     
     //GIC
-    //Iniciar analisis sintactico
-public void parse(){
+    public void parse() {
+        raiz = new Nodos("PROGRAMA");
         while (verActual().getType() != TokenType.EOF) {
             try {
-                // Intentamos armar el árbol
                 Nodos nodoS = analizarS();
-                if (raiz == null) raiz = nodoS; 
+                arboles.add(nodoS);
+                raiz.agregarHijo(nodoS);
             } catch (ParseException e) {
-                sincronizar(); 
+                sincronizar();
             }
         }
     }
+    
     //S -> D id= E | Q id | Q L | id = L
     private Nodos analizarS() {
         TokenType tipoActual = verActual().getType();
@@ -105,10 +110,13 @@ public void parse(){
         if (tipoActual == TokenType.REACTION || tipoActual == TokenType.BALANCE || tipoActual == TokenType.COMPARE) {
             derivacion.add("S → D id = E ;");
             nodo.agregarHijo(analizarD());
-            nodo.agregarHijo(new Nodos("id(" + verActual().getLexeme() + ")"));
+            
+            Token idToken = verActual();           // captura ANTES de avanzar
             validar(TokenType.IDENTIFIER);
-            nodo.agregarHijo(new Nodos("="));
+            nodo.agregarHijo(new Nodos("id(" + idToken.getLexeme() + ")"));
             validar(TokenType.ASSIGN);
+            nodo.agregarHijo(new Nodos("="));
+           
             nodo.agregarHijo(analizarE());
 
         } else if (tipoActual == TokenType.MASS || tipoActual == TokenType.VALIDATE) {

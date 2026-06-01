@@ -29,7 +29,7 @@ import parser.Nodos;
  */
 public class Principal extends javax.swing.JFrame {    
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Principal.class.getName());
-    JTextArea txtLineas = new JTextArea("1");
+    JTextArea txtLineas = new JTextArea("1");   
     private Nodos ultimoArbol = null;
     private ArrayList<String> ultimaDerivacion = new ArrayList<>();
     
@@ -118,8 +118,7 @@ public class Principal extends javax.swing.JFrame {
                 Image.SCALE_AREA_AVERAGING
         );  
         
-        lblMiguel.setIcon(new ImageIcon(imagenEscalada2));
-        
+        lblMiguel.setIcon(new ImageIcon(imagenEscalada2));  
 
 
     }//constructor
@@ -284,6 +283,7 @@ public class Principal extends javax.swing.JFrame {
 
         scpOutput.setBackground(new java.awt.Color(132, 164, 132));
         scpOutput.setBorder(null);
+        scpOutput.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         txtOutput.setBackground(new java.awt.Color(132, 164, 132));
         txtOutput.setFont(new java.awt.Font("Cascadia Code", 0, 16)); // NOI18N
@@ -409,8 +409,6 @@ public class Principal extends javax.swing.JFrame {
 
     private void btnRunActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRunActionPerformed
         ejecutarAnalisis();
-        btnArbol.setEnabled(true);
-        btnDeriv.setEnabled(true);
     }//GEN-LAST:event_btnRunActionPerformed
 
     private void btnLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarActionPerformed
@@ -463,6 +461,8 @@ private void ejecutarAnalisis() {
         // Si jhay error se aborta
         if (!erroresLexicosGlobales.isEmpty()) {
             StringBuilder sb = new StringBuilder("<html><font color='#FFD6D6'><b>--- ERRORES LÉXICOS ENCONTRADOS ---</b><br>");
+            sb.append("<div style='width:1100px;'>");
+            
             for (String err : erroresLexicosGlobales) {
                 sb.append(err).append("<br>");
             }
@@ -502,6 +502,8 @@ private void ejecutarAnalisis() {
             ultimoArbol = parser.getRaiz();
             ultimaDerivacion = parser.getDerivacion();
             txtOutput.setText("<html><font color='#FFFFFF'><b>Análisis completado con éxito.</b><br>Toda la estructura es correcta.</font></html>");
+            btnArbol.setEnabled(true);             // ← solo aquí
+            btnDeriv.setEnabled(true);  
         }
     }
     
