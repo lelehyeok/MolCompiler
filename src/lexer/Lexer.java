@@ -4,6 +4,8 @@
  */
 package lexer;
 
+import java.util.*;
+
 /**
  *
  * @author akmh1
@@ -13,8 +15,12 @@ public class Lexer {
     private int position;
     private char currentChar;
     private TokenType lastTokenType;
-    
+    private List<String> erroresLexicos = new ArrayList<>();
 
+    
+    public List<String> getErroresLexicos() {
+        return erroresLexicos;
+    }
     // El constructor recibe la fórmula (ej: "2Ca(OH)2") y prepara el primer caracter
     public Lexer(String input) {
         this.input = input;
@@ -110,7 +116,10 @@ public class Lexer {
                 return createToken(TokenType.IDENTIFIER, sb.toString());
                 } else {
                 // Si después del '_' hay un número, un espacio o nada, es un error léxico
-                throw new RuntimeException("Error léxico. Un identificador debe llevar una letra después del guión bajo. Encontrado: '" + currentChar + "' en la posición " + position);
+                    erroresLexicos.add("Error léxico en posición " + position + ": Identificador inválido '" + currentChar + 
+                                       "'. Recuerda que las variables deben empezar con '_' seguido inmediatamente de una letra (ejemplo: _mezcla).");
+                    advance();
+                    continue;
                 }
                 }
                 // 5. Automata para la gramatica de elementos
@@ -131,7 +140,7 @@ public class Lexer {
             if (Character.isLowerCase(currentChar)) {
                 StringBuilder sb = new StringBuilder();
                 //las palabras definidas serán minusculas
-                while (currentChar != '\0' && Character.isLowerCase(currentChar)) {
+                    while (currentChar != '\0' && (Character.isLowerCase(currentChar) || Character.isDigit(currentChar))) {
                     sb.append(currentChar);
                     advance();
                 }
@@ -144,12 +153,23 @@ public class Lexer {
                     case "mass":     return createToken(TokenType.MASS, word);
                     case "validate": return createToken(TokenType.VALIDATE, word);
                     default:
-                        // Si no está en el catálogo, lanzamos error
-                        throw new RuntimeException("Error léxico. Comando no reconocido '" + word + "' en la posición " + position);
+                        String sugerencia = "";
+                        if (word.startsWith("reaction")) {
+                            sugerencia = "¿Quisiste decir 'reaction'? Revisa la ortografia .Los comandos no llevan números ni mayusculas.";
+                        } else if (word.startsWith("balance") || word.startsWith("compare") || word.startsWith("mass") || word.startsWith("validate")) {
+                            sugerencia = "Revisa la ortografía. Los comandos van en minúsculas y sin números.";
+                        } else {
+                            sugerencia = "¿Olvidaste poner el guion bajo '_' al inicio de tu variable (ej: _" + word + ")? Si intentabas usar un comando, los válidos son: reaction, balance, compare, mass, validate.";
+                        }
+
+                        erroresLexicos.add("Error léxico en posición " + position + ": Palabra no reconocida '" + word + "'. " + sugerencia);
+                        continue;
                 }
             }
            // 7. Si lee un símbolo inválido (ej: @, %)
-            throw new RuntimeException("Error léxico. Carácter no reconocido '" + currentChar + "' en la posición " + position);
+            erroresLexicos.add("Error léxico en posición " + position + ": El símbolo '" + currentChar + "' no pertenece al alfabeto de este lenguaje químico.");
+            advance(); 
+            continue;
             
         }
         // fin del archivo o fila

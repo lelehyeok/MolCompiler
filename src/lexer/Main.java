@@ -11,36 +11,43 @@ import java.util.*;
  */
 public class Main {
     public static void main(String[] args) {
-        // Prueba con una cadena correcta
-        String testInput = "_agua = H2O";
+        // Cadena a propósito con errores léxicos (@) y sintácticos (falta flecha)
+        String testInput = "reaction _agua =  H2 + O2  2H2O; mass _agua;";
         
-        System.out.println("Analizando la entrada: " + testInput);
-        System.out.println("--------------------------------------------------");
+        System.out.println("Analizando: " + testInput);
         
         Lexer lexer = new Lexer(testInput);
         List<Token> listaDeTokens = new ArrayList<>();
         Token token = lexer.getNextToken();
         
         while (token.getType() != TokenType.EOF) {
-            System.out.println("Lexer -> Tipo: " + token.getType() + " | Lexema: '" + token.getLexeme() + "'");
             listaDeTokens.add(token);
             token = lexer.getNextToken(); 
         }
+        listaDeTokens.add(token); // EOF
+    // 1. Checar errores de arrastre
+        if (!lexer.getErroresLexicos().isEmpty()) {
+            System.err.println("--- ERRORES LEXICOS ENCONTRADOS ---");
+            for (String err : lexer.getErroresLexicos()) {
+                System.err.println(err);
+            }
+            System.err.println("Analisis abortado: No se puede iniciar el analisis sintactico debido a errores lexicos previos.");
+            return; 
+        }
         
-        System.out.println("Lexer -> Tipo: " + token.getType() + " | Lexema: '" + token.getLexeme() + "'");
-        listaDeTokens.add(token);
-        
-        System.out.println("--------------------------------------------------");
-        System.out.println("Analisis lexico exitoso. Tokens listos: " + listaDeTokens.size());
-        System.out.println("--------------------------------------------------");
-        
+        // 2. Arrancamos el Parser.
         Parser parser = new Parser(listaDeTokens);
+        parser.parse(); 
         
-        try {
-            parser.parse();
-            System.out.println("Analisis sintactico con exito");
-        } catch (RuntimeException e) {
-            System.err.println("Error " + e.getMessage());
+        // 3. Modo Pánico
+        if (!parser.getErroresSintacticos().isEmpty()) {
+            System.err.println("--- ERRORES SINTACTICOS ENCONTRADOS ---");
+            for (String err : parser.getErroresSintacticos()) {
+                System.err.println(err);
+            }
+            System.out.println("Analisis sintactico finalizado con errores.");
+        } else {
+            System.out.println("Analisis completado con exito. Todo el codigo es correcto.");
         }
     }
 }

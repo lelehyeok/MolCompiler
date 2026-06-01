@@ -13,6 +13,7 @@ import java.util.*;
 public class Parser {
     private List<Token> tokens;
     private int actual = 0;
+    private List<String> erroresSintacticos = new ArrayList<>();
     
     private ArrayList<String> derivacion = new ArrayList<>();
     private Nodos raiz = null;
@@ -20,9 +21,14 @@ public class Parser {
     public ArrayList<String> getDerivacion() { 
         return derivacion; 
     }
+    public List<String> getErroresSintacticos() {
+        return erroresSintacticos;
+    }
     public Nodos getRaiz() { 
         return raiz; 
     }
+    
+    private static class ParseException extends RuntimeException {}
     
     public Parser(List<Token> tokens){
         this.tokens = tokens;
@@ -35,22 +41,62 @@ public class Parser {
         return tokens.get(actual);
     }
     
+    private String nombreAmigable(TokenType tipo) {
+        switch (tipo) {
+            case ASSIGN: return "el signo de igual '='";
+            case ARROW: return "la flecha '->' para separar reactivos y productos";
+            case PLUS: return "el signo de suma '+'";
+            case SEMICOLON: return "el punto y coma ';' al final de la instrucción";
+            case IDENTIFIER: return "el nombre de una variable (ej: _mezcla)";
+            case ELEMENT: return "un elemento químico con mayúscula (ej: H, Na)";
+            case LPAREN: return "abrir un paréntesis '('";
+            case RPAREN: return "cerrar el paréntesis ')'";
+            case COEFFICIENT: return "un coeficiente numérico (ej: 2H2O)";
+            case SUBSCRIPT: return "un subíndice numérico";
+            case REACTION: return "el comando 'reaction'";
+            case BALANCE: return "el comando 'balance'";
+            case COMPARE: return "el comando 'compare'";
+            case MASS: return "el comando 'mass'";
+            case VALIDATE: return "el comando 'validate'";
+            case EOF: return "el final de la instrucción";
+            default: return tipo.toString();
+        }
+    }
+    
     private void validar(TokenType tokenEsperado){
         if(verActual().getType() == tokenEsperado){
             actual++;
         }else{
-            throw new RuntimeException("Error de sintaxis. Se esperaba el token '"+tokenEsperado+
-                                       "' pero se encontró '"+ verActual().getType() +
-                                       "' con el lexema '"+ verActual().getLexeme()+ "'");
+            erroresSintacticos.add("Error de sintaxis: Falta " + nombreAmigable(tokenEsperado) + 
+                                   ". Se encontró algo inesperado: '" + verActual().getLexeme() + "'");
+            throw new ParseException();
+        }
+    }
+    
+    private void sincronizar() {
+        // Avanzamos tirando a la basura los tokens malos hasta topar con un ';'
+        while (verActual().getType() != TokenType.EOF) {
+            if (verActual().getType() == TokenType.SEMICOLON) {
+                actual++; // Consumimos el punto y coma para empezar la siguiente línea limpios
+                break;
+            }
+            actual++;
         }
     }
     
     //GIC
     //Iniciar analisis sintactico
-    public void parse(){
-        raiz = analizarS();
+public void parse(){
+        while (verActual().getType() != TokenType.EOF) {
+            try {
+                // Intentamos armar el árbol
+                Nodos nodoS = analizarS();
+                if (raiz == null) raiz = nodoS; 
+            } catch (ParseException e) {
+                sincronizar(); 
+            }
+        }
     }
-    
     //S -> D id= E | Q id | Q L | id = L
     private Nodos analizarS() {
         TokenType tipoActual = verActual().getType();
@@ -85,7 +131,8 @@ public class Parser {
             nodo.agregarHijo(analizarL());
 
         } else {
-            throw new RuntimeException("Error de sintaxis. Estructura de instrucción no válida al inicio.");
+            erroresSintacticos.add("Error de sintaxis: Toda instrucción debe iniciar con un comando (ej: reaction, mass) o asignando una variable (ej: _mezcla =).");
+            throw new ParseException();
         }
 
         // Final de sentencia obligatorio
@@ -112,7 +159,8 @@ public class Parser {
             nodo.agregarHijo(new Nodos("compare"));
             validar(TokenType.COMPARE);
         } else {
-            throw new RuntimeException("Error de sintaxis. Se esperaba un comando de declaración (reaction, balance o compare).");
+            erroresSintacticos.add("Error de sintaxis: Se esperaba un comando de declaración ('reaction', 'balance' o 'compare').");
+            throw new ParseException();
         }
         return nodo;
     }
@@ -130,7 +178,8 @@ public class Parser {
             nodo.agregarHijo(new Nodos("validate"));
             validar(TokenType.VALIDATE);
         } else {
-            throw new RuntimeException("Error de sintaxis. Se esperaba un comando de consulta (mass o validate).");
+            erroresSintacticos.add("Error de sintaxis: Se esperaba un comando de consulta ('mass' o 'validate').");
+            throw new ParseException();
         }
         return nodo;
     }
@@ -208,7 +257,8 @@ public class Parser {
             validar(TokenType.RPAREN);
             nodo.agregarHijo(analizarU());
         } else {
-            throw new RuntimeException("Error de sintaxis. Se esperaba un elemento o '(', pero se encontró '" + verActual().getLexeme() + "'");
+            erroresSintacticos.add("Error de sintaxis en la molécula: Un compuesto debe iniciar con un Elemento Químico o abriendo un paréntesis '('.");
+            throw new ParseException();
         }
         return nodo;
     }

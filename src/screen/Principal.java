@@ -420,68 +420,88 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_btnLimpiarActionPerformed
 
     
-    private void ejecutarAnalisis() {
+private void ejecutarAnalisis() {
         String input = txtCodigo.getText().trim();
 
         // Limpiar tabla y output
         DefaultTableModel modelo = (DefaultTableModel) tblLexemas.getModel();
         modelo.setRowCount(0);
         txtOutput.setText("");
-
-        // Léxico ----------------
-        List<Token> listaDeTokens = new ArrayList<>();
-        List<String> errores = new ArrayList<>();
         
-        String[] lineas = input.split("\n", -1); // Procesa línea por línea
+        if (input.isEmpty()) return;
+
+        // 1. Lexico
+        List<Token> listaDeTokens = new ArrayList<>();
+        List<String> erroresLexicosGlobales = new ArrayList<>(); // Aquí guardaremos los errores de todas las líneas
+        
+        String[] lineas = input.split("\n", -1); 
         
         for (int numLinea = 1; numLinea <= lineas.length; numLinea++) {
             String linea = lineas[numLinea - 1];
             if (linea.isBlank()) continue;
 
-            try {
-                Lexer lexer = new Lexer(linea);
-                Token tok = lexer.getNextToken();
+            Lexer lexer = new Lexer(linea);
+            Token tok = lexer.getNextToken();
 
-                while (tok.getType() != TokenType.EOF) {
-                    listaDeTokens.add(tok);
-                    modelo.addRow(new Object[]{tok.getType().toString(), tok.getLexeme()});
-                    tok = lexer.getNextToken();
-                }
+            // Metemos los tokens válidos a la tabla y a la lista
+            while (tok.getType() != TokenType.EOF) {
                 listaDeTokens.add(tok);
-
-            } catch (RuntimeException e) {
-                errores.add("Línea " + numLinea + ": " + e.getMessage());
-                // No hace return, sigue con la siguiente línea
+                modelo.addRow(new Object[]{tok.getType().toString(), tok.getLexeme()});
+                tok = lexer.getNextToken();
+            }
+            
+            // El lexer revisa errores
+            if (!lexer.getErroresLexicos().isEmpty()) {
+                for (String err : lexer.getErroresLexicos()) {
+                    // Linea con error
+                    erroresLexicosGlobales.add("Línea " + numLinea + " - " + err);
+                }
             }
         }
 
-        // Sintáctico ----------------
-        ArrayList<Token> tokensParaParser = new ArrayList<>();
-        for (Token t : listaDeTokens) {
-            if (t.getType() != TokenType.EOF) tokensParaParser.add(t);
-        }
-        tokensParaParser.add(new Token(TokenType.EOF, ""));
-
-        Parser parser = new Parser(tokensParaParser);
-        try {
-            parser.parse();
-            ultimoArbol = parser.getRaiz();
-            ultimaDerivacion = parser.getDerivacion();
-            txtOutput.setForeground(new java.awt.Color(180, 255, 180));
-            txtOutput.setText("Análisis léxico y sintáctico completado con éxito.");
-        } catch (RuntimeException e) {
-            ultimoArbol = null;
-            ultimaDerivacion.clear();
-            errores.add("Error sintáctico: " + e.getMessage());
-        }
-        
-        if (!errores.isEmpty()) {
-            StringBuilder sb = new StringBuilder("<html>");
-            for (String err : errores) {
+        // Errores lexicos de arrastre
+        // Si jhay error se aborta
+        if (!erroresLexicosGlobales.isEmpty()) {
+            StringBuilder sb = new StringBuilder("<html><font color='#FFD6D6'><b>--- ERRORES LÉXICOS ENCONTRADOS ---</b><br>");
+            for (String err : erroresLexicosGlobales) {
                 sb.append(err).append("<br>");
             }
-            sb.append("</html>");
+            sb.append("<br>Análisis abortado: No se puede iniciar el análisis sintáctico debido a errores léxicos previos.</font></html>");
             txtOutput.setText(sb.toString());
+            
+            ultimoArbol = null;
+            ultimaDerivacion.clear();
+            return; // Detenemos la ejecución, el Parser no arranca
+        }
+
+        // 2. Tokens para el parser
+        ArrayList<Token> tokensParaParser = new ArrayList<>();
+        for (Token t : listaDeTokens) {
+            if (t.getType() != TokenType.EOF) {
+                tokensParaParser.add(t);
+            }
+        }
+        tokensParaParser.add(new Token(TokenType.EOF, "")); 
+
+        // SINTACTICO
+        Parser parser = new Parser(tokensParaParser);
+        parser.parse(); //Modo panico
+
+        // Errores sintacticos de arrastre
+        if (!parser.getErroresSintacticos().isEmpty()) {
+            StringBuilder sb = new StringBuilder("<html><font color='#FFF4CC'><b>--- ERRORES SINTÁCTICOS ENCONTRADOS ---</b><br>");
+            for (String err : parser.getErroresSintacticos()) {
+                sb.append(err).append("<br>");
+            }
+            sb.append("<br> Análisis sintáctico finalizado con errores.</font></html>");
+            txtOutput.setText(sb.toString());
+            ultimoArbol = parser.getRaiz();
+            ultimaDerivacion = parser.getDerivacion();
+            
+        } else {
+            ultimoArbol = parser.getRaiz();
+            ultimaDerivacion = parser.getDerivacion();
+            txtOutput.setText("<html><font color='#FFFFFF'><b>Análisis completado con éxito.</b><br>Toda la estructura es correcta.</font></html>");
         }
     }
     
