@@ -5,7 +5,7 @@
 package parser;
 import lexer.Token;
 import lexer.TokenType;
-import java.util.List;
+import java.util.*;
 /**
  *
  * @author akmh1
@@ -13,6 +13,16 @@ import java.util.List;
 public class Parser {
     private List<Token> tokens;
     private int actual = 0;
+    
+    private ArrayList<String> derivacion = new ArrayList<>();
+    private Nodos raiz = null;
+
+    public ArrayList<String> getDerivacion() { 
+        return derivacion; 
+    }
+    public Nodos getRaiz() { 
+        return raiz; 
+    }
     
     public Parser(List<Token> tokens){
         this.tokens = tokens;
@@ -29,8 +39,8 @@ public class Parser {
         if(verActual().getType() == tokenEsperado){
             actual++;
         }else{
-            throw new RuntimeException("Error de sintaxis: Se esperaba el token '"+tokenEsperado+
-                                       "' pero se encontro '"+ verActual().getType() +
+            throw new RuntimeException("Error de sintaxis. Se esperaba el token '"+tokenEsperado+
+                                       "' pero se encontró '"+ verActual().getType() +
                                        "' con el lexema '"+ verActual().getLexeme()+ "'");
         }
     }
@@ -38,140 +48,182 @@ public class Parser {
     //GIC
     //Iniciar analisis sintactico
     public void parse(){
-        analizarS();
+        raiz = analizarS();
     }
     
     //S -> D id= E | Q id | Q L | id = L
-    private void analizarS(){
+    private Nodos analizarS() {
         TokenType tipoActual = verActual().getType();
-        
-        //D id  = E
+        Nodos nodo = new Nodos("S");
+
         if (tipoActual == TokenType.REACTION || tipoActual == TokenType.BALANCE || tipoActual == TokenType.COMPARE) {
-            analizarD();
+            derivacion.add("S → D id = E ;");
+            nodo.agregarHijo(analizarD());
+            nodo.agregarHijo(new Nodos("id(" + verActual().getLexeme() + ")"));
             validar(TokenType.IDENTIFIER);
+            nodo.agregarHijo(new Nodos("="));
             validar(TokenType.ASSIGN);
-            analizarE(); 
-        }
-        
-        //Q id | Q L
-        else if (tipoActual == TokenType.MASS || tipoActual == TokenType.VALIDATE) {
-            analizarQ();
-            // Si el siguiente token es un identificador, va a buscar en memoria
+            nodo.agregarHijo(analizarE());
+
+        } else if (tipoActual == TokenType.MASS || tipoActual == TokenType.VALIDATE) {
+            nodo.agregarHijo(analizarQ());
             if (verActual().getType() == TokenType.IDENTIFIER) {
+                derivacion.add("S → Q id ;");
+                nodo.agregarHijo(new Nodos("id(" + verActual().getLexeme() + ")"));
                 validar(TokenType.IDENTIFIER);
             } else {
-                // Si no, analiza una molécula o compuesto directo "al vuelo"
-                analizarL(); 
+                derivacion.add("S → Q L ;");
+                nodo.agregarHijo(analizarL());
             }
-        }
-        
-        //id = L
-        else if (tipoActual == TokenType.IDENTIFIER) {
+
+        } else if (tipoActual == TokenType.IDENTIFIER) {
+            derivacion.add("S → id = L ;");
+            nodo.agregarHijo(new Nodos("id(" + verActual().getLexeme() + ")"));
             validar(TokenType.IDENTIFIER);
+            nodo.agregarHijo(new Nodos("="));
             validar(TokenType.ASSIGN);
-            analizarL(); 
-        } 
-        else {
-            throw new RuntimeException("Error de Sintaxis: Estructura de instrucción no válida al inicio.");
+            nodo.agregarHijo(analizarL());
+
+        } else {
+            throw new RuntimeException("Error de sintaxis. Estructura de instrucción no válida al inicio.");
         }
-    }//analizarS
-    
-    private void analizarD(){
-        //D -> reaction | balance | compare
+
+        // Final de sentencia obligatorio
+        nodo.agregarHijo(new Nodos(";"));
+        validar(TokenType.SEMICOLON);
+
+        return nodo;
+    }
+
+    // D -> reaction | balance | compare
+    private Nodos analizarD() {
         TokenType tipoActual = verActual().getType();
+        Nodos nodo = new Nodos("D");
         if (tipoActual == TokenType.REACTION) {
+            derivacion.add("D → reaction");
+            nodo.agregarHijo(new Nodos("reaction"));
             validar(TokenType.REACTION);
         } else if (tipoActual == TokenType.BALANCE) {
+            derivacion.add("D → balance");
+            nodo.agregarHijo(new Nodos("balance"));
             validar(TokenType.BALANCE);
         } else if (tipoActual == TokenType.COMPARE) {
+            derivacion.add("D → compare");
+            nodo.agregarHijo(new Nodos("compare"));
             validar(TokenType.COMPARE);
         } else {
-            throw new RuntimeException("Error de sintaxis: Se esperaba un comando de declaración (reaction, balance o compare).");
+            throw new RuntimeException("Error de sintaxis. Se esperaba un comando de declaración (reaction, balance o compare).");
         }
-    }//analizar D
-    
+        return nodo;
+    }
+
     // Q -> mass | validate
-    private void analizarQ(){
+    private Nodos analizarQ() {
         TokenType tipoActual = verActual().getType();
+        Nodos nodo = new Nodos("Q");
         if (tipoActual == TokenType.MASS) {
+            derivacion.add("Q → mass");
+            nodo.agregarHijo(new Nodos("mass"));
             validar(TokenType.MASS);
         } else if (tipoActual == TokenType.VALIDATE) {
+            derivacion.add("Q → validate");
+            nodo.agregarHijo(new Nodos("validate"));
             validar(TokenType.VALIDATE);
         } else {
-            throw new RuntimeException("Error de sintaxis: Se esperaba un comando de consulta (mass o validate).");
+            throw new RuntimeException("Error de sintaxis. Se esperaba un comando de consulta (mass o validate).");
         }
-    }//analizar Q
-    
+        return nodo;
+    }
+
     // E -> L -> L
-    private void analizarE(){
-        analizarL();
+    private Nodos analizarE() {
+        Nodos nodo = new Nodos("E");
+        derivacion.add("E → L → L");
+        nodo.agregarHijo(analizarL());
+        nodo.agregarHijo(new Nodos("→"));
         validar(TokenType.ARROW);
-        analizarL();
-    }//analizar E
-    
-    //L -> M | M+L
-    private void analizarL(){
-        //Primera opcion
-        analizarM();
-        
-        //If recursivo
+        nodo.agregarHijo(analizarL());
+        return nodo;
+    }
+
+    // L -> M | M + L
+    private Nodos analizarL() {
+        Nodos nodo = new Nodos("L");
+        nodo.agregarHijo(analizarM());
         if (verActual().getType() == TokenType.PLUS) {
+            derivacion.add("L → M + L");
+            nodo.agregarHijo(new Nodos("+"));
             validar(TokenType.PLUS);
-            analizarL();
-        }
-        
-    }//analizar L
-    
-    //M -> coefP | P
-    private void analizarM(){
-        //Si empieza con un numero es coeficiente
-        if (verActual().getType() == TokenType.COEFFICIENT) {
-            validar(TokenType.COEFFICIENT);
-            analizarP();
+            nodo.agregarHijo(analizarL());
         } else {
-            //Segundo caso
-            analizarP();
+            derivacion.add("L → M");
         }
-    }//analizar M
-    
-    //P -> G | GP
-    private void analizarP(){
-        analizarG(); //Empieza analizando G si o si 
+        return nodo;
+    }
+
+    // M -> coef P | P
+    private Nodos analizarM() {
+        Nodos nodo = new Nodos("M");
+        if (verActual().getType() == TokenType.COEFFICIENT) {
+            derivacion.add("M → coef P");
+            nodo.agregarHijo(new Nodos("coef(" + verActual().getLexeme() + ")"));
+            validar(TokenType.COEFFICIENT);
+            nodo.agregarHijo(analizarP());
+        } else {
+            derivacion.add("M → P");
+            nodo.agregarHijo(analizarP());
+        }
+        return nodo;
+    }
+
+    // P -> G | G P
+    private Nodos analizarP() {
+        Nodos nodo = new Nodos("P");
+        nodo.agregarHijo(analizarG());
         TokenType tipoSiguiente = verActual().getType();
-        // Si hay otro elemento o parentesis, recursaividad
         if (tipoSiguiente == TokenType.ELEMENT || tipoSiguiente == TokenType.LPAREN) {
-            analizarP();
+            derivacion.add("P → G P");
+            nodo.agregarHijo(analizarP());
+        } else {
+            derivacion.add("P → G");
         }
-    }//analizar P
-    
-    //G -> elemU | (P)U
-    private void analizarG(){
+        return nodo;
+    }
+
+    // G -> elem U | ( P ) U
+    private Nodos analizarG() {
         TokenType tipoActual = verActual().getType();
-        
-        //Inicia con elemento
+        Nodos nodo = new Nodos("G");
         if (tipoActual == TokenType.ELEMENT) {
+            derivacion.add("G → elem U");
+            nodo.agregarHijo(new Nodos("elem(" + verActual().getLexeme() + ")"));
             validar(TokenType.ELEMENT);
-            analizarU();                
-        } 
-        //Inicia con parentesis
-        else if (tipoActual == TokenType.LPAREN) {
-            validar(TokenType.LPAREN);  //Abrir parentesis
-            analizarP();                //Analizar lo que hay dentro
-            validar(TokenType.RPAREN);  //Cerrar parentesis
-            analizarU();                //Revisamos subindice
-        } 
-        // Camino de error
-        else {
-            throw new RuntimeException("Error de Sintaxis: Se esperaba un elemento o abrir un paréntesis '(', pero se encontro '" + verActual().getLexeme() + "'");
+            nodo.agregarHijo(analizarU());
+        } else if (tipoActual == TokenType.LPAREN) {
+            derivacion.add("G → ( P ) U");
+            nodo.agregarHijo(new Nodos("("));
+            validar(TokenType.LPAREN);
+            nodo.agregarHijo(analizarP());
+            nodo.agregarHijo(new Nodos(")"));
+            validar(TokenType.RPAREN);
+            nodo.agregarHijo(analizarU());
+        } else {
+            throw new RuntimeException("Error de sintaxis. Se esperaba un elemento o '(', pero se encontró '" + verActual().getLexeme() + "'");
         }
-    }//analizar G
-    
-    //U -> sub | cadena vacia
-    private void analizarU(){
-        //revisa el subindice
+        return nodo;
+    }
+
+    // U -> sub | ε
+    private Nodos analizarU() {
+        Nodos nodo = new Nodos("U");
         if (verActual().getType() == TokenType.SUBSCRIPT) {
-            validar(TokenType.SUBSCRIPT); 
+            derivacion.add("U → sub");
+            nodo.agregarHijo(new Nodos("sub(" + verActual().getLexeme() + ")"));
+            validar(TokenType.SUBSCRIPT);
+        } else {
+            derivacion.add("U → ε");
+            nodo.agregarHijo(new Nodos("ε"));
         }
-    }//analzar U
-    
+        return nodo;
+    }
 }

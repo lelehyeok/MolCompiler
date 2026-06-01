@@ -23,5 +23,6 @@ public enum TokenType {
     ARROW,
     IDENTIFIER,
     ASSIGN,
+    SEMICOLON,
     EOF //fin de la cadena 
 }

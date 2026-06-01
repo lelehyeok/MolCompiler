@@ -13,15 +13,14 @@ public class Lexer {
     private int position;
     private char currentChar;
     private TokenType lastTokenType;
+    
 
     // El constructor recibe la fórmula (ej: "2Ca(OH)2") y prepara el primer caracter
     public Lexer(String input) {
         this.input = input;
         this.position = 0;
         this.currentChar = input.length() > 0 ? input.charAt(0) : '\0';
-    }
-    
-    
+    }    
 
     // Función para avanzar un paso en nuestra máquina de estados
     private void advance() {
@@ -71,10 +70,13 @@ public class Lexer {
                 advance();
                 return createToken(TokenType.ASSIGN, "=");
             }
-
-            // Automata elementos, palabras reservadas
+            if (currentChar == ';') {
+                advance();
+                return createToken(TokenType.SEMICOLON, ";");
+            }
             
-           // 3. Automata para coeficientes y subindices
+            
+            // 3. Automata para coeficientes y subindices
                 if (Character.isDigit(currentChar)) {
                 StringBuilder sb = new StringBuilder();
                 while (currentChar != '\0' && Character.isDigit(currentChar)) {
@@ -99,16 +101,16 @@ public class Lexer {
                 if (currentChar != '\0' && Character.isLetter(currentChar)) {
                     sb.append(currentChar);
                     advance();
+                    
             // A partir de aquí (tercer caracter), ya podemos aceptar letras o números
                 while (currentChar != '\0' && Character.isLetterOrDigit(currentChar)) {
                     sb.append(currentChar);
                     advance();
-                }
-        
+                }        
                 return createToken(TokenType.IDENTIFIER, sb.toString());
                 } else {
-            // Si después del '_' hay un número, un espacio o nada, es un error léxico
-                throw new RuntimeException("Error lexico: Un identificador debe llevar una letra después del guion bajo. Encontrado: '" + currentChar + "' en la posición " + position);
+                // Si después del '_' hay un número, un espacio o nada, es un error léxico
+                throw new RuntimeException("Error léxico. Un identificador debe llevar una letra después del guión bajo. Encontrado: '" + currentChar + "' en la posición " + position);
                 }
                 }
                 // 5. Automata para la gramatica de elementos
@@ -143,11 +145,11 @@ public class Lexer {
                     case "validate": return createToken(TokenType.VALIDATE, word);
                     default:
                         // Si no está en el catálogo, lanzamos error
-                        throw new RuntimeException("Error lexico: Comando no reconocido '" + word + "' en la posicion " + position);
+                        throw new RuntimeException("Error léxico. Comando no reconocido '" + word + "' en la posición " + position);
                 }
             }
            // 7. Si lee un símbolo inválido (ej: @, %)
-            throw new RuntimeException("Error lexico: Caracter no reconocido '" + currentChar + "' en la posicion " + position);
+            throw new RuntimeException("Error léxico. Carácter no reconocido '" + currentChar + "' en la posición " + position);
             
         }
         // fin del archivo o fila
