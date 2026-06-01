@@ -12,7 +12,7 @@ import java.util.*;
 public class Main {
     public static void main(String[] args) {
         // Prueba con una cadena correcta
-        String testInput = "massH20";
+        String testInput = "_agua = H2O";
         
         System.out.println("Analizando la entrada: " + testInput);
         System.out.println("--------------------------------------------------");

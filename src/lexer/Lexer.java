@@ -108,7 +108,7 @@ public class Lexer {
                 return createToken(TokenType.IDENTIFIER, sb.toString());
                 } else {
             // Si después del '_' hay un número, un espacio o nada, es un error léxico
-                throw new RuntimeException("Error léxico: Un identificador debe llevar una letra después del guion bajo. Encontrado: '" + currentChar + "' en la posición " + position);
+                throw new RuntimeException("Error lexico: Un identificador debe llevar una letra después del guion bajo. Encontrado: '" + currentChar + "' en la posición " + position);
                 }
                 }
                 // 5. Automata para la gramatica de elementos
@@ -143,11 +143,11 @@ public class Lexer {
                     case "validate": return createToken(TokenType.VALIDATE, word);
                     default:
                         // Si no está en el catálogo, lanzamos error
-                        throw new RuntimeException("Error léxico: Comando no reconocido '" + word + "' en la posición " + position);
+                        throw new RuntimeException("Error lexico: Comando no reconocido '" + word + "' en la posicion " + position);
                 }
             }
-           // 7. MANEJO DE ERRORES: Si lee un símbolo inválido (ej: @, %)
-            throw new RuntimeException("Error léxico: Caracter no reconocido '" + currentChar + "' en la posición " + position);
+           // 7. Si lee un símbolo inválido (ej: @, %)
+            throw new RuntimeException("Error lexico: Caracter no reconocido '" + currentChar + "' en la posicion " + position);
             
         }
         // fin del archivo o fila
