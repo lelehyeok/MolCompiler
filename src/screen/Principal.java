@@ -104,19 +104,19 @@ public class Principal extends javax.swing.JFrame {
             new Dimension(38,txtLineas.getPreferredSize().height)                            
         );
         
-        scpOutput.setBorder(BorderFactory.createLineBorder(new Color(132,164,132),2));
+        scpOutput.setBorder(BorderFactory.createLineBorder(new Color(192,215,192),2));
         scpOutput.setViewportBorder(null);
-        scpOutput.getViewport().setBackground(new Color(132,164,132));
+        scpOutput.getViewport().setBackground(new Color(192,215,192));
         
         //Logo ----------------------
         java.net.URL url2 = getClass().getResource("/screen/miguel.png"); 
         System.out.println(url2);
         ImageIcon icon2 = new ImageIcon(url2);
         Image imagenEscalada2 = icon2.getImage().getScaledInstance(
-                112,
-                154,
+                200,
+                250,
                 Image.SCALE_AREA_AVERAGING
-        );  
+        ); 
         
         lblMiguel.setIcon(new ImageIcon(imagenEscalada2));  
 
@@ -192,7 +192,7 @@ public class Principal extends javax.swing.JFrame {
                 .addComponent(lblLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 362, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(470, Short.MAX_VALUE))
+                .addContainerGap(703, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -204,12 +204,13 @@ public class Principal extends javax.swing.JFrame {
 
         jPanel1.add(jPanel2, java.awt.BorderLayout.PAGE_START);
 
-        jPanel4.setBackground(new java.awt.Color(248, 253, 248));
-        jPanel4.setPreferredSize(new java.awt.Dimension(957, 200));
+        jPanel4.setBackground(new java.awt.Color(192, 215, 192));
+        jPanel4.setPreferredSize(new java.awt.Dimension(957, 300));
 
-        pOutput.setBackground(new java.awt.Color(132, 164, 132));
+        pOutput.setBackground(new java.awt.Color(192, 215, 192));
+        pOutput.setPreferredSize(new java.awt.Dimension(957, 600));
 
-        jPanel7.setBackground(new java.awt.Color(76, 122, 76));
+        jPanel7.setBackground(new java.awt.Color(132, 164, 132));
         jPanel7.setPreferredSize(new java.awt.Dimension(957, 40));
 
         btnDeriv.setBackground(new java.awt.Color(248, 253, 248));
@@ -258,7 +259,7 @@ public class Principal extends javax.swing.JFrame {
                 .addComponent(btnRun, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 330, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 563, Short.MAX_VALUE)
                 .addComponent(btnLimpiar)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnArbol, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -271,23 +272,24 @@ public class Principal extends javax.swing.JFrame {
             .addGroup(jPanel7Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(btnLimpiar, javax.swing.GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(btnDeriv, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnArbol, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(btnRun, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel1)))
+                    .addGroup(jPanel7Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnRun, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel1)))
+                    .addComponent(btnLimpiar, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE)
+                    .addComponent(btnArbol, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnDeriv, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
-        scpOutput.setBackground(new java.awt.Color(132, 164, 132));
+        scpOutput.setBackground(new java.awt.Color(192, 215, 192));
         scpOutput.setBorder(null);
         scpOutput.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-        txtOutput.setBackground(new java.awt.Color(132, 164, 132));
-        txtOutput.setFont(new java.awt.Font("Cascadia Code", 0, 16)); // NOI18N
-        txtOutput.setForeground(new java.awt.Color(255, 255, 255));
+        txtOutput.setBackground(new java.awt.Color(192, 215, 192));
+        txtOutput.setFont(new java.awt.Font("Cascadia Code", 0, 20)); // NOI18N
+        txtOutput.setForeground(new java.awt.Color(76, 122, 76));
         txtOutput.setVerticalAlignment(javax.swing.SwingConstants.TOP);
         scpOutput.setViewportView(txtOutput);
 
@@ -295,34 +297,34 @@ public class Principal extends javax.swing.JFrame {
         pOutput.setLayout(pOutputLayout);
         pOutputLayout.setHorizontalGroup(
             pOutputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, 1190, Short.MAX_VALUE)
             .addGroup(pOutputLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(scpOutput)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblMiguel, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(lblMiguel, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         pOutputLayout.setVerticalGroup(
             pOutputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pOutputLayout.createSequentialGroup()
                 .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(18, 18, 18)
                 .addGroup(pOutputLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(pOutputLayout.createSequentialGroup()
-                        .addComponent(scpOutput, javax.swing.GroupLayout.DEFAULT_SIZE, 148, Short.MAX_VALUE)
+                        .addComponent(scpOutput)
                         .addContainerGap())
-                    .addComponent(lblMiguel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(lblMiguel, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(pOutput, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(pOutput, javax.swing.GroupLayout.DEFAULT_SIZE, 1190, Short.MAX_VALUE)
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(pOutput, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(pOutput, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
         );
 
         jPanel1.add(jPanel4, java.awt.BorderLayout.PAGE_END);
@@ -381,14 +383,14 @@ public class Principal extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 1190, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 574, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 587, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -460,8 +462,8 @@ private void ejecutarAnalisis() {
         // Errores lexicos de arrastre
         // Si jhay error se aborta
         if (!erroresLexicosGlobales.isEmpty()) {
-            StringBuilder sb = new StringBuilder("<html><font color='#FFD6D6'><b>--- ERRORES LÉXICOS ENCONTRADOS ---</b><br>");
-            sb.append("<div style='width:1100px;'>");
+            StringBuilder sb = new StringBuilder("<html><font color='#4C7A4C'><b>--- ERRORES LÉXICOS ENCONTRADOS ---</b><br>");
+            sb.append("<div style='width:1000px;'>");
             
             for (String err : erroresLexicosGlobales) {
                 sb.append(err).append("<br>");
@@ -489,7 +491,7 @@ private void ejecutarAnalisis() {
 
         // Errores sintacticos de arrastre
         if (!parser.getErroresSintacticos().isEmpty()) {
-            StringBuilder sb = new StringBuilder("<html><font color='#FFF4CC'><b>--- ERRORES SINTÁCTICOS ENCONTRADOS ---</b><br>");
+            StringBuilder sb = new StringBuilder("<html><font color='#4C7A4C'><b>--- ERRORES SINTÁCTICOS ENCONTRADOS ---</b><br>");
             for (String err : parser.getErroresSintacticos()) {
                 sb.append(err).append("<br>");
             }
@@ -509,7 +511,7 @@ private void ejecutarAnalisis() {
             semantico.analizar(parser.getRaiz());
             
             if (!semantico.getErroresSemanticos().isEmpty()) {
-                StringBuilder sb = new StringBuilder("<html><font color='#FFA07A'><b>--- ERRORES SEMÁNTICOS ENCONTRADOS ---</b><br>");
+                StringBuilder sb = new StringBuilder("<html><font color='#4C7A4C'><b>--- ERRORES SEMÁNTICOS ENCONTRADOS ---</b><br>");
                 for (String err : semantico.getErroresSemanticos()) {
                     sb.append(err).append("<br>");
                 }
@@ -517,10 +519,10 @@ private void ejecutarAnalisis() {
                 txtOutput.setText(sb.toString());
                 
             } else {
-                StringBuilder sb = new StringBuilder("<html><font color='#90EE90'><b>Análisis completado con éxito.</b><br>La estructura y la química son correctas.<br><br>");
+                StringBuilder sb = new StringBuilder("<html><font color='#4C7A4C'><b>Análisis completado con éxito.</b><br>La estructura y la química son correctas.<br><br>");
                 
                 for (String res : semantico.getResultados()) {
-                    sb.append("<font color='#FFFFFF'><b>▶ ").append(res).append("</b></font><br>");
+                    sb.append("<font color='#4C7A4C'><b>▶ ").append(res).append("</b></font><br>");
                 }
                 
                 sb.append("</font></html>");

@@ -31,10 +31,10 @@ public class Derivacion extends JDialog {
         area.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
 
         StringBuilder sb = new StringBuilder();
-        sb.append("Derivación por la izquierda:\n");
+        sb.append("Derivaciones\n");
         sb.append("─".repeat(38)).append("\n\n");
-        for (int i = 0; i < derivacion.size(); i++) {
-            sb.append(String.format("%-3d  %s%n", i + 1, derivacion.get(i)));
+        for (String paso : derivacion) {
+            sb.append(paso).append("\n");
         }
         area.setText(sb.toString());
         area.setCaretPosition(0);
