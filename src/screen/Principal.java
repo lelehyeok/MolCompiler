@@ -501,11 +501,36 @@ private void ejecutarAnalisis() {
         } else {
             ultimoArbol = parser.getRaiz();
             ultimaDerivacion = parser.getDerivacion();
-            txtOutput.setText("<html><font color='#FFFFFF'><b>Análisis completado con éxito.</b><br>Toda la estructura es correcta.</font></html>");
-            btnArbol.setEnabled(true);             // ← solo aquí
-            btnDeriv.setEnabled(true);  
-        }
+            
+            //Semantico
+            semantic.SemanticAnalyzer semantico = new semantic.SemanticAnalyzer();
+            
+            // Le pasamos la raíz del árbol (AST) que construyó el Parser
+            semantico.analizar(parser.getRaiz());
+            
+            if (!semantico.getErroresSemanticos().isEmpty()) {
+                StringBuilder sb = new StringBuilder("<html><font color='#FFA07A'><b>--- ERRORES SEMÁNTICOS ENCONTRADOS ---</b><br>");
+                for (String err : semantico.getErroresSemanticos()) {
+                    sb.append(err).append("<br>");
+                }
+                sb.append("<br> Análisis finalizado con errores en la lógica química.</font></html>");
+                txtOutput.setText(sb.toString());
+                
+            } else {
+                StringBuilder sb = new StringBuilder("<html><font color='#90EE90'><b>Análisis completado con éxito.</b><br>La estructura y la química son correctas.<br><br>");
+                
+                for (String res : semantico.getResultados()) {
+                    sb.append("<font color='#FFFFFF'><b>▶ ").append(res).append("</b></font><br>");
+                }
+                
+                sb.append("</font></html>");
+                txtOutput.setText(sb.toString());
+            }
+
+            btnArbol.setEnabled(true);             
+            btnDeriv.setEnabled(true);
     }
+}
     
     private void limpiar() {
         txtCodigo.setText("");

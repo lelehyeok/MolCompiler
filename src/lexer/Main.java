@@ -4,6 +4,7 @@
  */
 package lexer;
 import parser.Parser;
+import semantic.SemanticAnalyzer;
 import java.util.*;
 /**
  *
@@ -11,8 +12,7 @@ import java.util.*;
  */
 public class Main {
     public static void main(String[] args) {
-        // Cadena a propósito con errores léxicos (@) y sintácticos (falta flecha)
-        String testInput = "reaction _agua =  H2 + O2  2H2O; mass _agua;";
+        String testInput = "reaction _pirita = FeS2 + O2 -> Fe2O3 + SO2; balance _pirita;";
         
         System.out.println("Analizando: " + testInput);
         
@@ -46,8 +46,23 @@ public class Main {
                 System.err.println(err);
             }
             System.out.println("Analisis sintactico finalizado con errores.");
-        } else {
-            System.out.println("Analisis completado con exito. Todo el codigo es correcto.");
         }
+        
+        //Semantico
+        SemanticAnalyzer semantico = new SemanticAnalyzer();
+        
+        // Le pasamos la raíz del árbol (AST) que construyó el Parser
+        semantico.analizar(parser.getRaiz());
+        
+        if (!semantico.getErroresSemanticos().isEmpty()) {
+            System.err.println("--- ERRORES SEMANTICOS ENCONTRADOS ---");
+            for (String err : semantico.getErroresSemanticos()) {
+                System.err.println(err);
+            }
+            System.err.println("Analisis finalizado con errores semanticos.");
+        } else {
+            System.out.println("Analisis completado con exito. La estructura y la quimica son correctas.");
+        }
+        
     }
 }

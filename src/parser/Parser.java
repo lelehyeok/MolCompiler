@@ -107,7 +107,7 @@ public class Parser {
         TokenType tipoActual = verActual().getType();
         Nodos nodo = new Nodos("S");
 
-        if (tipoActual == TokenType.REACTION || tipoActual == TokenType.BALANCE || tipoActual == TokenType.COMPARE) {
+        if (tipoActual == TokenType.REACTION  || tipoActual == TokenType.COMPARE) {
             derivacion.add("S → D id = E ;");
             nodo.agregarHijo(analizarD());
             
@@ -119,7 +119,7 @@ public class Parser {
            
             nodo.agregarHijo(analizarE());
 
-        } else if (tipoActual == TokenType.MASS || tipoActual == TokenType.VALIDATE) {
+        } else if (tipoActual == TokenType.MASS || tipoActual == TokenType.VALIDATE|| tipoActual == TokenType.BALANCE) {
             nodo.agregarHijo(analizarQ());
             if (verActual().getType() == TokenType.IDENTIFIER) {
                 derivacion.add("S → Q id ;");
@@ -150,7 +150,7 @@ public class Parser {
         return nodo;
     }
 
-    // D -> reaction | balance | compare
+    // D -> reaction | compare
     private Nodos analizarD() {
         TokenType tipoActual = verActual().getType();
         Nodos nodo = new Nodos("D");
@@ -158,10 +158,7 @@ public class Parser {
             derivacion.add("D → reaction");
             nodo.agregarHijo(new Nodos("reaction"));
             validar(TokenType.REACTION);
-        } else if (tipoActual == TokenType.BALANCE) {
-            derivacion.add("D → balance");
-            nodo.agregarHijo(new Nodos("balance"));
-            validar(TokenType.BALANCE);
+        
         } else if (tipoActual == TokenType.COMPARE) {
             derivacion.add("D → compare");
             nodo.agregarHijo(new Nodos("compare"));
@@ -173,7 +170,7 @@ public class Parser {
         return nodo;
     }
 
-    // Q -> mass | validate
+    // Q -> mass | validate | balance
     private Nodos analizarQ() {
         TokenType tipoActual = verActual().getType();
         Nodos nodo = new Nodos("Q");
@@ -185,7 +182,11 @@ public class Parser {
             derivacion.add("Q → validate");
             nodo.agregarHijo(new Nodos("validate"));
             validar(TokenType.VALIDATE);
-        } else {
+        }  else if (tipoActual == TokenType.BALANCE) {
+            derivacion.add("Q → balance");
+            nodo.agregarHijo(new Nodos("balance"));
+            validar(TokenType.BALANCE);
+        }else {
             erroresSintacticos.add("Error de sintaxis: Se esperaba un comando de consulta ('mass' o 'validate').");
             throw new ParseException();
         }
