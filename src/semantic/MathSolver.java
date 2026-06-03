@@ -178,7 +178,7 @@ public class MathSolver {public static String balancear(List<Map<String, Integer
             if (i < productos.size() - 1) ecuacionVisual.append(" + ");
         }
 
-        log.append("<font color='#4C7A4C' size='+1'><b>Resultado final: ").append(ecuacionVisual.toString()).append("</b></font><br>");
+        log.append("<font color='#4C7A4C'><b>Resultado final: ").append(ecuacionVisual.toString()).append("</b></font><br>");
 
         return log.toString();
     }//estandarizar enteros

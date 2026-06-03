@@ -458,23 +458,7 @@ private void ejecutarAnalisis() {
             }
         }
 
-        // Errores lexicos de arrastre
-        if (!erroresLexicosGlobales.isEmpty()) {
-            StringBuilder sb = new StringBuilder("<html><font color='#4C7A4C'><b>--- ERRORES LÉXICOS ENCONTRADOS ---</b><br>");
-            sb.append("<div style='width:1000px;'>");
-            
-            for (String err : erroresLexicosGlobales) {
-                sb.append(err).append("<br>");
-            }
-            sb.append("<br>Análisis abortado: No se puede iniciar el análisis sintáctico debido a errores léxicos previos.</font></html>");
-            txtOutput.setText(sb.toString());
-            
-            ultimoArbol = null;
-            ultimaDerivacion.clear();
-            return; // Detenemos la ejecución, pero la tabla ya guardó todo lo que sí fue válido
-        }
-
-        // 2. Tokens para el parser
+        // 2. Tokens para el parser (siempre continuar, aunque haya errores léxicos)
         ArrayList<Token> tokensParaParser = new ArrayList<>();
         for (Token t : listaDeTokens) {
             if (t.getType() != TokenType.EOF) {
@@ -483,21 +467,38 @@ private void ejecutarAnalisis() {
         }
         tokensParaParser.add(new Token(TokenType.EOF, "")); 
 
-        // SINTACTICO
+        // SINTACTICO (siempre se ejecuta)
         Parser parser = new Parser(tokensParaParser);
         parser.parse(); //Modo panico
 
-        // Errores sintacticos de arrastre
-        if (!parser.getErroresSintacticos().isEmpty()) {
-            StringBuilder sb = new StringBuilder("<html><font color='#4C7A4C'><b>--- ERRORES SINTÁCTICOS ENCONTRADOS ---</b><br>");
-            for (String err : parser.getErroresSintacticos()) {
-                sb.append(err).append("<br>");
+        // Mostrar errores léxicos Y/O sintácticos juntos
+        boolean hayErroresLexicos = !erroresLexicosGlobales.isEmpty();
+        boolean hayErroresSintacticos = !parser.getErroresSintacticos().isEmpty();
+
+        if (hayErroresLexicos || hayErroresSintacticos) {
+            StringBuilder sb = new StringBuilder("<html><div style='width:1000px;'>");
+            
+            if (hayErroresLexicos) {
+                sb.append("<font color='#CC0000'><b>--- ERRORES LÉXICOS ENCONTRADOS ---</b></font><br>");
+                for (String err : erroresLexicosGlobales) {
+                    sb.append("<font color='#CC0000'>").append(err).append("</font><br>");
+                }
+                sb.append("<br>");
             }
-            sb.append("<br> Análisis sintáctico finalizado con errores.</font></html>");
+            
+            if (hayErroresSintacticos) {
+                sb.append("<font color='#4C7A4C'><b>--- ERRORES SINTÁCTICOS ENCONTRADOS ---</b></font><br>");
+                for (String err : parser.getErroresSintacticos()) {
+                    sb.append("<font color='#4C7A4C'>").append(err).append("</font><br>");
+                }
+                sb.append("<br><font color='#4C7A4C'>Análisis sintáctico finalizado con errores.</font>");
+            }
+            
+            sb.append("</div></html>");
             txtOutput.setText(sb.toString());
             ultimoArbol = parser.getRaiz();
             ultimaDerivacion = parser.getDerivacion();
-            
+
         } else {
             ultimoArbol = parser.getRaiz();
             ultimaDerivacion = parser.getDerivacion();
