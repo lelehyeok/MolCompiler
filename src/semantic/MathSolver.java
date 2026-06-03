@@ -43,9 +43,9 @@ public class MathSolver {public static String balancear(List<Map<String, Integer
         }//for de la matriz
         
         // --- [PASO 1] Documentamos la matriz inicial ---
-        log.append("<br><br><font color='#A8D08D'><b>[PASO 1] Construcción de la matriz inicial (Sistema Homogéneo):</b></font><br>");
+        log.append("<br><br><font color='#4C7A4C'><b>[PASO 1] Construcción de la matriz inicial (Sistema Homogéneo):</b></font><br>");
         // La etiqueta <pre> nos garantiza que use una fuente monospace y respete los espacios
-        log.append("<pre style='color: #E2E2E2; font-family: Consolas, monospace; font-size: 15px;'>");
+        log.append("<pre style='color: #4C7A4C; font-family: Consolas, monospace; font-size: 15px;'>");
         for(int i = 0; i < numFilas; i++){
             log.append(String.format(Locale.US, "%-6s", elementos.get(i)+":"));
             for(int j = 0; j < numColumnas; j++){
@@ -95,8 +95,8 @@ public class MathSolver {public static String balancear(List<Map<String, Integer
         }//for
         
         // --- [PASO 2] Documentamos la matriz después de Gauss-Jordan ---
-        log.append("<font color='#A8D08D'><b>[PASO 2] Matriz escalonada reducida (Gauss-Jordan aplicado):</b></font><br>");
-        log.append("<pre style='color: #E2E2E2; font-family: Consolas, monospace; font-size: 15px;'>");
+        log.append("<font color='#4C7A4C'><b>[PASO 2] Matriz escalonada reducida (Gauss-Jordan aplicado):</b></font><br>");
+        log.append("<pre style='color: #4C7A4C; font-family: Consolas, monospace; font-size: 15px;'>");
         for(int i = 0; i < filas; i++){
             log.append(String.format(Locale.US, "%-6s", elementos.get(i)+":"));
             for(int j = 0; j < columnas; j++){
@@ -126,8 +126,8 @@ public class MathSolver {public static String balancear(List<Map<String, Integer
     public static String estandarizarEnteros(double[] resultados, List<Map<String, Integer>> reactivos, List<Map<String, Integer>> productos, StringBuilder log){
         
         // --- [PASO 3] Documentamos el despeje ---
-        log.append("<font color='#A8D08D'><b>[PASO 3] Extracción y estandarización a enteros:</b></font><br>");
-        log.append("<font color='#E2E2E2'>Coeficientes base obtenidos: [ ");
+        log.append("<font color='#4C7A4C'><b>[PASO 3] Extracción y estandarización a enteros:</b></font><br>");
+        log.append("<font color='#4C7A4C'>Coeficientes base obtenidos: [ ");
         for(double r : resultados) log.append(String.format(Locale.US, "%.2f ", r));
         log.append("]</font><br>");
         
@@ -149,9 +149,9 @@ public class MathSolver {public static String balancear(List<Map<String, Integer
         }//while
         
         if(multiplicador > 1){
-            log.append("<font color='#E2E2E2'>Se detectaron fracciones. Multiplicando toda la ecuación por: <b>").append(multiplicador).append("</b></font><br><br>");
+            log.append("<font color='#4C7A4C'>Se detectaron fracciones. Multiplicando toda la ecuación por: <b>").append(multiplicador).append("</b></font><br><br>");
         } else {
-            log.append("<font color='#E2E2E2'>Todos los coeficientes son enteros exactos. No requiere estandarización.</font><br><br>");
+            log.append("<font color='#4C7A4C'>Todos los coeficientes son enteros exactos. No requiere estandarización.</font><br><br>");
         }
         
         // Construcción del String visual final
@@ -178,7 +178,7 @@ public class MathSolver {public static String balancear(List<Map<String, Integer
             if (i < productos.size() - 1) ecuacionVisual.append(" + ");
         }
 
-        log.append("<font color='#FFFFFF' size='+1'><b>Resultado final: ").append(ecuacionVisual.toString()).append("</b></font><br>");
+        log.append("<font color='#4C7A4C' size='+1'><b>Resultado final: ").append(ecuacionVisual.toString()).append("</b></font><br>");
 
         return log.toString();
     }//estandarizar enteros

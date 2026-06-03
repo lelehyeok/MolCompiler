@@ -527,6 +527,7 @@ private void ejecutarAnalisis() {
                 
                 sb.append("</font></html>");
                 txtOutput.setText(sb.toString());
+                
             }
 
             btnArbol.setEnabled(true);             

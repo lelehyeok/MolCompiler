@@ -262,8 +262,9 @@ public class Parser {
         if (verActual().getType() == TokenType.COEFFICIENT) {
             derivacion.add("M → coef P");
             
+            Token coefToken = verActual();              
             validar(TokenType.COEFFICIENT);
-            nodo.agregarHijo(new Nodos("coef(" + verActual().getLexeme() + ")"));
+            nodo.agregarHijo(new Nodos("coef(" + coefToken.getLexeme() + ")"));
             
             nodo.agregarHijo(analizarP());
         } else {
@@ -294,12 +295,12 @@ public class Parser {
         Nodos nodo = new Nodos("G");
         
         if (tipoActual == TokenType.ELEMENT) {
-            derivacion.add("G → elem U");
+            derivacion.add("G → elem U");          
             nodo.agregarHijo(new Nodos("elem(" + verActual().getLexeme() + ")"));
             validar(TokenType.ELEMENT);
             nodo.agregarHijo(analizarU());
         } else if (tipoActual == TokenType.LPAREN) {
-            derivacion.add("G → ( P ) U");
+            derivacion.add("G → ( P ) U");            
             nodo.agregarHijo(new Nodos("("));
             validar(TokenType.LPAREN);
             nodo.agregarHijo(analizarP());
