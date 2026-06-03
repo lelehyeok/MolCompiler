@@ -443,24 +443,22 @@ private void ejecutarAnalisis() {
             Lexer lexer = new Lexer(linea);
             Token tok = lexer.getNextToken();
 
-            // Metemos los tokens válidos a la tabla y a la lista
+            // Metemos los tokens validos a la lista y a la tabla al mismo tiempo
             while (tok.getType() != TokenType.EOF) {
                 listaDeTokens.add(tok);
                 modelo.addRow(new Object[]{tok.getType().toString(), tok.getLexeme()});
                 tok = lexer.getNextToken();
             }
             
-            // El lexer revisa errores
+            // El lexer revisa errores (los tokens inválidos terminan aquí, no en la tabla)
             if (!lexer.getErroresLexicos().isEmpty()) {
                 for (String err : lexer.getErroresLexicos()) {
-                    // Linea con error
                     erroresLexicosGlobales.add("Línea " + numLinea + " - " + err);
                 }
             }
         }
 
         // Errores lexicos de arrastre
-        // Si jhay error se aborta
         if (!erroresLexicosGlobales.isEmpty()) {
             StringBuilder sb = new StringBuilder("<html><font color='#4C7A4C'><b>--- ERRORES LÉXICOS ENCONTRADOS ---</b><br>");
             sb.append("<div style='width:1000px;'>");
@@ -473,7 +471,7 @@ private void ejecutarAnalisis() {
             
             ultimoArbol = null;
             ultimaDerivacion.clear();
-            return; // Detenemos la ejecución, el Parser no arranca
+            return; // Detenemos la ejecución, pero la tabla ya guardó todo lo que sí fue válido
         }
 
         // 2. Tokens para el parser
@@ -506,8 +504,6 @@ private void ejecutarAnalisis() {
             
             //Semantico
             semantic.SemanticAnalyzer semantico = new semantic.SemanticAnalyzer();
-            
-            // Le pasamos la raíz del árbol (AST) que construyó el Parser
             semantico.analizar(parser.getRaiz());
             
             if (!semantico.getErroresSemanticos().isEmpty()) {
@@ -527,13 +523,12 @@ private void ejecutarAnalisis() {
                 
                 sb.append("</font></html>");
                 txtOutput.setText(sb.toString());
-                
             }
 
             btnArbol.setEnabled(true);             
             btnDeriv.setEnabled(true);
+        }
     }
-}
     
     private void limpiar() {
         txtCodigo.setText("");

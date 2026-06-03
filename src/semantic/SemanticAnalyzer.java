@@ -36,13 +36,6 @@ public class SemanticAnalyzer {
 
         String nombreNodo = nodo.etiqueta;
 
-        // Validacion de elementos
-        if (nombreNodo != null && nombreNodo.startsWith("elem(")) {
-            String simbolo = nombreNodo.substring(5, nombreNodo.length() - 1);
-            if (!TablaPeriodica.existeElemento(simbolo)) {
-                erroresSemanticos.add("Error Semantico: El elemento quimico '" + simbolo + "' no existe en la Tabla Periodica real.");
-            }
-        }
 
         // Variables
         if (nombreNodo != null && nombreNodo.equals("S")) {

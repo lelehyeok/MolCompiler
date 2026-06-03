@@ -122,7 +122,7 @@ public class Lexer {
                     continue;
                 }
                 }
-                // 5. Automata para la gramatica de elementos
+            // 5. Automata para la gramatica de elementos
             if (Character.isUpperCase(currentChar)) {
                 StringBuilder sb = new StringBuilder();
                 sb.append(currentChar);
@@ -133,7 +133,16 @@ public class Lexer {
                     sb.append(currentChar);
                     advance();
                 }
-                return createToken(TokenType.ELEMENT, sb.toString());
+                
+                String simbolo = sb.toString();
+                
+                // Validar que el elemento exista
+                if (semantic.TablaPeriodica.existeElemento(simbolo)) {
+                    return createToken(TokenType.ELEMENT, simbolo);
+                } else {
+                    erroresLexicos.add("Error léxico en posición " + position + ": El símbolo '" + simbolo + "' tiene forma de elemento, pero no existe en la Tabla Periódica real.");
+                    continue; // Registra el error y sigue leyendo el resto del texto
+                }
             }
             
             // 6. Automata de palabras reservadas
